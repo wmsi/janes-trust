@@ -1,0 +1,106 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
+    <link href="resource_table.css" rel="stylesheet" id="demo-css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.css"/>
+</head>
+
+<body>
+    <table id="sort-options" class="display">
+      <thead>
+        <th>
+            <b>Filter by: </b>
+        </th>
+        <th>
+          <div class="multiselect">
+            <div class="selectBox" onclick="showCheckboxes()">
+              <select>
+                <option>Tech Required</option>
+              </select>
+              <div class="overSelect"></div>
+            </div>
+            <div id="tech-required">
+            </div>
+          </div>
+            <!-- <select class="form-control form-control-lg" id="tech-required" onchange="renderTable()">
+                <option value="">Tech Required</option>
+            </select> -->
+        </th>
+        <th>
+            <select class="form-control form-control-lg" id="subject" onchange="renderTable()">
+                <option value="">Subject</option>
+            </select>
+        </th>
+        <th>
+            <!-- <label>Select your Data Type</label> -->
+            <select class="form-control form-control-lg" id="grade" onchange="renderTable()">
+                <option value="">Grade Level</option>
+            </select>
+        </th>
+        <th>
+          <!-- <button id="submit" class="form-control btn" onClick="render">View Curricula</button> -->
+          <input type="radio" name="view" value="Activities" checked>Activity View<br>
+          <input type="radio" name="view" value="Curricula">Curriculum View<br>
+      </thead>
+    </table>
+    <table id="resource-table" class="display">
+      <thead>
+          <tr><b>
+              <th>Activity</th>
+              <th>Description</th>
+              <th width="75px">Duration</th>
+              <th width="55px">Grade Level</th>
+              <th>Subject</th>
+              <th>Tech Required</th>
+              <th>Author</th>
+          </tr></b>
+      </thead>
+      <tbody id='table-content'>
+      </tbody>
+    </table>
+        <!-- Form Designed by Sunil Rajput -->
+    <!-- <div class="container">
+        <div class="login-form">
+        <div class="main-div">
+            <div class="panel">
+           <p>Please enter your email and password</p>
+           </div>
+            <form id="Login">
+
+                <div class="form-group">
+
+
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Email Address">
+
+                </div>
+
+                <div class="form-group">
+
+                    <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+
+                </div>
+                <div class="forgot">
+                    <a href="reset.html">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+
+            </form>
+            </div>
+        </div>
+    </div> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.js"></script>
+
+    <script src="resource_table.js"></script>
+    <script src="resource_datatable_header.js"></script>
+</body>
+
+</html>
