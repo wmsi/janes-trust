@@ -325,7 +325,8 @@ function _applySearchFilter(activities) {
 /*
     Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
     Once the HTTP Request is complete, call helper functions to populate the array and build
-    page features
+    page features. This function makes use of the Google Sheets API
+    Reference: https://developers.google.com/sheets/api/
     @private
 */
 function _getResourceTable() {

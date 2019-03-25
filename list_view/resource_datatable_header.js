@@ -29,6 +29,13 @@ $(document).ready(function(){
     $('.dataTables_length').addClass('pull-left');
 });
 
+/*
+    Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
+    Once the HTTP Request is complete, call helper functions to populate the array and build
+    page features. This function makes use of the Google Sheets API
+    Reference: https://developers.google.com/sheets/api/
+    @private
+*/
 function _getResourceTable() {
       $.ajax({
         url: "https://content-sheets.googleapis.com/v4/spreadsheets/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/values/A2%3AM",
@@ -39,37 +46,46 @@ function _getResourceTable() {
           key: 'AIzaSyD5Nq5v_wpiKmyyJ9Pxx170HNlsqM8VZsA'
         },
         success: function(response) {
-          storeData(response);
+            storeData(response);
+            _addGradeRange();
+            _renderSelects();
+            _addGradeRange();
+            _setupDataTable(renderTable());
+            renderFeatures();
         },
       });
     }
 
-    function storeData(response) {
-        console.log("processing " + response.values.length + " activities");
-        for(let i=0; i<response.values.length; i++) {
-            var value = response.values[i];
-            
-            resource_table.Activities.push({
-              "Resource Name": value[0],
-              "Resource Link": value[1],
-              "Duration": value[2],
-              "Grade Level": value[3],
-              "Subject": value[4].split(", "),
-              "Tech Required": value[5].split(", "),
-              "Author": value[6],
-              "Author Link": value[7],
-              "Tags": value[8].split(", "),
-              "Additional Info": value[9],
-              "Description": value[10],
-              "Img URL": typeof value[12] !== undefined ? value[12] : ""
-            });
-        }
-        _addGradeRange();
-        _renderSelects();
-        _addGradeRange();
-        _setupDataTable(renderTable());
-        renderFeatures();
+/*
+    Store Google Sheet data in the resource_table variable
+    This involves parsing every row from the table (stored as arrays)
+    into individual JSON objects
+    @param {object} response- REST response 
+    @private
+*/
+function storeData(response) {
+    console.log("processing " + response.values.length + " activities");
+    for(let i=0; i<response.values.length; i++) {
+        var value = response.values[i];
+        if(!value[11])
+            value[11] = "";
+        
+        resource_table.Activities.push({
+          "Resource Name": value[0],
+          "Resource Link": value[1],
+          "Duration": value[2],
+          "Grade Level": value[3],
+          "Subject": value[4].split(", "),
+          "Tech Required": value[5].split(", "),
+          "Author": value[6],
+          "Author Link": value[7],
+          "Tags": value[8].split(", "),
+          "Additional Info": value[9],
+          "Description": value[10],
+          "Img URL": value[11]
+        });
     }
+}
 
 /*
     Add options to a dropdown menu
