@@ -1,0 +1,155 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
+    <link href="resource_table.css" rel="stylesheet" id="demo-css" type="text/css">
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Brand</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">Link</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+          </ul>
+          <form class="navbar-form navbar-left">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Link</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    <table id="sort-options" class="center">
+      <thead>
+        <th>
+            <b>Filter by: </b>
+        </th>
+        <!-- <th>
+            <select class="form-control form-control-lg" id="tech-required" onchange="renderTable()">
+                <option value="">Tech Required</option>
+            </select>
+        </th> -->
+        <th>
+            <select class="form-control form-control-lg" id="subject" onchange="renderTable()">
+                <option value="">Subject</option>
+            </select>
+        </th>
+        <th>
+            <!-- <label>Select your Data Type</label> -->
+            <select class="form-control form-control-lg" id="grade" onchange="renderTable()">
+                <option value="">Grade Level</option>
+            </select>
+        </th>
+        <th>
+            Tech Required: <br />
+            <small>
+              <div id="tech-required"></div>
+            </small>
+        </th>
+        <th>
+          <!-- <button id="submit" class="form-control btn" onClick="render">View Curricula</button> -->
+          <input type="radio" name="view" value="activities" checked>Activity View<br>
+          <input type="radio" name="view" value="curriculum">Curriculum View<br>
+        </th>
+      </thead>
+    </table>
+    <table id="resource-table" class="center">
+      <thead>
+          <tr><b>
+              <th>Activity</th>
+              <th>Description</th>
+              <th><a href='#' onclick="sortDuration()">Duration</a></th>
+              <th>Grade Level</th>
+              <th>Subject</th>
+              <th>Tech Required</th>
+              <th>Author</th>
+              <!-- <th>Tags</th> -->
+          </tr></b>
+      </thead>
+      <tbody id='table-content'>
+      </tbody>
+    </table>
+        <!-- Form Designed by Sunil Rajput -->
+    <!-- <div class="container">
+        <div class="login-form">
+        <div class="main-div">
+            <div class="panel">
+           <p>Please enter your email and password</p>
+           </div>
+            <form id="Login">
+
+                <div class="form-group">
+
+
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Email Address">
+
+                </div>
+
+                <div class="form-group">
+
+                    <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+
+                </div>
+                <div class="forgot">
+                    <a href="reset.html">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+
+            </form>
+            </div>
+        </div>
+    </div> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="resource_table.js"></script>
+    <script src="resource_table_header_checkboxes.js"></script>
+</body>
+
+</html>

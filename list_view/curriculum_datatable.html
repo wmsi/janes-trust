@@ -1,0 +1,67 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
+    <link href="resource_table.css" rel="stylesheet" id="demo-css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.css"/>
+</head>
+
+<body>
+    <div style="float:left; width: 10%;">
+      <h3 style="text-align:center">Filters:</h3>
+    </div>
+    <div class="filters">
+      <select class="form-control form-control-lg" id="subject" onchange="renderTable()">
+          <option value="">Subject</option>
+      </select><br />
+      <select class="form-control form-control-lg" id="grade" onchange="renderTable()">
+          <option value="">Grade Level</option>
+      </select><br />
+      <button onClick="resetFilters()">Reset All Filters</button>
+    </div>
+    <div class="filters">
+      <div class="multiselect">
+        <div class="selectBox" onclick="showCheckboxes()">
+          <select>
+            <option>Tech Required</option>
+          </select>
+          <div class="overSelect"></div>
+        </div>
+        <div id="tech-required">
+        </div>
+      </div>
+      <button class="filter-button" onClick="uncheckTech()">Uncheck All</button>
+    </div>
+
+    <table id="resource-table" class="display">
+      <thead>
+          <tr><b>
+              <th>Activity</th>
+              <th>Description</th>
+              <th width="75px">Duration</th>
+              <th width="55px">Grade Level</th>
+              <th>Subject</th>
+              <th>Tech Required</th>
+              <th>Author</th>
+          </tr></b>
+      </thead>
+      <tbody id='table-content'>
+      </tbody>
+    </table>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.js"></script>
+
+    <script src="resource_table.js"></script>
+    <script src="resource_datatable_header.js"></script>
+    <script>table_state='Curricula'</script>
+</body>
+
+</html>

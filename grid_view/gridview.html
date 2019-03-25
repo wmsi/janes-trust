@@ -1,0 +1,117 @@
+<html>
+<!--
+  
+  This page prvodies an alternate take on the table view of CS activities.
+  It uses the slick plugin to create three carousels of activities which can 
+  be set to different themes in gridview.js.
+
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
+    <link href="resource_table.css" rel="stylesheet" id="demo-css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.css"/>
+    <link href="https://cdn.rawgit.com/noelboss/featherlight/1.7.13/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css" />
+    <style>
+      .col-md-4 {
+        padding: 10px;
+      }
+
+      img {
+        width: 100%;
+        max-height: 30%;
+        /*height: 70%;*/
+      }
+
+      .features {
+        width: 60%;
+        max-height: 45%;
+        margin: 20px auto;
+        padding: 20px;
+        display: block;
+      }
+
+      .thumbnail {
+        padding-left: 20px;
+        /*border-left: 1px solid gray;*/
+      }
+
+  </style>
+</head>
+
+<body>
+
+    <div style="padding: 20px">
+      <div class="filters">
+        <h3 style="text-align: center">Filter Activities By:</h3>
+      </div>
+      <div class="filters">
+        <select class="form-control form-control-lg" id="subject" onchange="renderFeatures()">
+            <option value="">Subject</option>
+        </select><br />
+        <select class="form-control form-control-lg" id="grade" onchange="renderFeatures()">
+            <option value="">Grade Level</option>
+        </select>
+      </div>
+      <div class="filters">
+        <div class="multiselect">
+          <div class="selectBox" onclick="showCheckboxes()">
+            <select>
+              <option>Tech Required</option>
+            </select>
+            <div class="overSelect"></div>
+          </div>
+          <div id="tech-required">
+          </div>
+        </div>
+        <button class="filter-button" onClick="uncheckTech()">Uncheck All</button>
+      </div>
+      <div class="filters">
+        <button onClick="resetFilters()">Reset All Filters</button><br /><br />
+        <!-- <label for="keyword-search">Keyword Search: </label> -->
+        <input type="text" id="keyword-search"  onchange="renderFeatures()" placeholder="Keyword Search" />
+      </div>
+    </div>
+    <br />
+    <div style="height: 100px"></div>
+
+    <section id="feature-container"></section>
+<!--     <section class="features" id="row-1"></section><br />
+    <section class="features" id="row-2"></section><br />
+    <section class="features" id="row-3"></section><br />
+    <section class="features" id="row-4"></section><br /> -->
+
+<!--     <table id="resource-table" class="display">
+      <thead>
+          <tr><b>
+              <th>Activity</th>
+              <th>Description</th>
+              <th width="75px">Duration</th>
+              <th width="55px">Grade Level</th>
+              <th>Subject</th>
+              <th>Tech Required</th>
+              <th>Miscellaneous</th>
+          </tr></b>
+      </thead>
+      <tbody id='table-content'>
+      </tbody>
+    </table> -->
+
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.13/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="slick/slick.min.js"></script>
+    <!-- <script src="resource_table.js"></script> -->
+    <script src="gridview.js"></script>
+    <script>table_state='Activities'</script>
+</body>
+
+</html>
