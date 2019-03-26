@@ -43,7 +43,7 @@ function _getResourceTable() {
         data: {
           majorDimension: 'ROWS',
           // ranges: 'A7:M10',
-          key: 'AIzaSyD5Nq5v_wpiKmyyJ9Pxx170HNlsqM8VZsA'
+          key: API_KEY
         },
         success: function(response) {
             storeData(response);
