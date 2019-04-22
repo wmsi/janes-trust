@@ -1,6 +1,6 @@
 var table_state = 'Activities';     // what is currently being displayed?
 // var table_source;                   // store data for the DataTables plugin to render
-var resource_table = {"Activities": []};
+// var resource_table = {"Activities": []};
 var table_ref;                      // reference variable for accessing the data table
 var select_expanded = false;        // used to dynamically render the dropdown- checkbox menu
 const columns = [{ title: "Resource Name" }, { title: "Description" }, { title: "Duration" }, { title: "Grade Level "},
@@ -28,64 +28,6 @@ $(document).ready(function(){
     $('.dataTables_filter').addClass('pull-left');
     $('.dataTables_length').addClass('pull-left');
 });
-
-/*
-    Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
-    Once the HTTP Request is complete, call helper functions to populate the array and build
-    page features. This function makes use of the Google Sheets API
-    Reference: https://developers.google.com/sheets/api/
-    @private
-*/
-function _getResourceTable() {
-      $.ajax({
-        url: "https://content-sheets.googleapis.com/v4/spreadsheets/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/values/A2%3AM",
-        type: "get",
-        data: {
-          majorDimension: 'ROWS',
-          // ranges: 'A7:M10',
-          key: API_KEY
-        },
-        success: function(response) {
-            storeData(response);
-            _addGradeRange();
-            _renderSelects();
-            _addGradeRange();
-            _setupDataTable(renderTable());
-            renderFeatures();
-        },
-      });
-    }
-
-/*
-    Store Google Sheet data in the resource_table variable
-    This involves parsing every row from the table (stored as arrays)
-    into individual JSON objects
-    @param {object} response- REST response 
-    @private
-*/
-function storeData(response) {
-    console.log("processing " + response.values.length + " activities");
-    for(let i=0; i<response.values.length; i++) {
-        var value = response.values[i];
-        if(!value[11])
-            value[11] = "";
-        
-        resource_table.Activities.push({
-          "Resource Name": value[0],
-          "Resource Link": value[1],
-          "Duration": value[2],
-          "Grade Level": value[3],
-          "Subject": value[4].split(", "),
-          "Tech Required": value[5].split(", "),
-          "Author": value[6],
-          "Author Link": value[7],
-          "Tags": value[8].split(", "),
-          "Additional Info": value[9],
-          "Description": value[10],
-          "Img URL": value[11]
-        });
-    }
-}
 
 /*
     Add options to a dropdown menu
@@ -132,6 +74,15 @@ function renderFeatures() {
             feature_list.push(item);
         }
     });
+
+    $('#resource-table_filter').after(`<section id="feature-container">
+      <br /><h3>Featured Activities:</h3><br />
+      <div class="features">
+        <div class="featured-activity" id="feature1"></div>
+        <div class="featured-activity" id="feature2"></div>
+        <div class="featured-activity" id="feature3"></div>
+      </div>
+    </section>`);
 
 
     var features = _buildFeatures(feature_list);
@@ -191,6 +142,98 @@ function uncheckTech() {
         item.checked = false;
     });
     renderTable();
+}
+
+
+/*
+    Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
+    Once the HTTP Request is complete, call helper functions to populate the array and build
+    page features. This function makes use of the Google Sheets API
+    Reference: https://developers.google.com/sheets/api/
+    @private
+*/
+function _getResourceTable() {
+    // _displayLoading(true);
+    _addGradeRange();
+    _renderSelects();
+    _setupDataTable(renderTable());
+    renderFeatures();
+    return;
+    $.ajax({
+        url: "https://content-sheets.googleapis.com/v4/spreadsheets/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/values/A2%3AM",
+        type: "get",
+        data: {
+          majorDimension: 'ROWS',
+          // ranges: 'A7:M10',
+          key: API_KEY
+        },
+        success: function(response) {
+            _storeData(response);
+            _displayLoading(false);
+            _addGradeRange();
+            _renderSelects();
+            _setupDataTable(renderTable());
+            renderFeatures();
+        },
+        error: function(error) {
+            _displayError(error);
+        },
+        timeout: 10000
+    });
+}
+
+/*
+    Display some text or graphic to show that the resources are still loading
+*/
+function _displayLoading(loading) {
+    if(loading)
+        $('#load-div').show();
+    else
+        $('#load-div').hide();
+}
+
+/*
+    Store Google Sheet data in the resource_table variable
+    This involves parsing every row from the table (stored as arrays)
+    into individual JSON objects
+    @param {object} response- REST response 
+    @private
+*/
+function _storeData(response) {
+    console.log("processing " + response.values.length + " activities");
+    for(let i=0; i<response.values.length; i++) {
+        var value = response.values[i];
+        if(!value[11])
+            value[11] = "";
+        
+        resource_table.Activities.push({
+          "Resource Name": value[0],
+          "Resource Link": value[1],
+          "Duration": value[2],
+          "Grade Level": value[3],
+          "Subject": value[4].split(", "),
+          "Tech Required": value[5].split(", "),
+          "Author": value[6],
+          "Author Link": value[7],
+          "Tags": value[8].split(", "),
+          "Additional Info": value[9],
+          "Description": value[10],
+          "Img URL": value[11]
+        });
+    }
+}
+
+/*
+    Print a generic error message if the resource does not load
+    @param {object} response - REST Request Error message
+    @private
+*/
+function _displayError(error) {
+    console.log(error);
+    // print a generic error message with instructions
+    $('#feature-container').html(`Whoops! The resource failed to load. Please wait a few minutes and then refresh the page. 
+        If the problem persists please <a href="https://www.whitemountainscience.org/contact-us">contact</a> a WMSI administrator.`);
+    _getResourceTable();
 }
 
 /*

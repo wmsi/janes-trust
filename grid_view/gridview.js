@@ -1,5 +1,5 @@
 var table_state = 'Activities';     // what is currently being displayed?
-var resource_table = {"Activities": []};
+// var resource_table = {"Activities": []};
 var search_text = [];
 var table_ref;                      // reference variable for accessing the data table
 var select_expanded = false;        // used to dynamically render the dropdown- checkbox menu
@@ -98,99 +98,6 @@ function uncheckTech() {
     });
     renderFeatures();
 }
-
-/*
-    Create rows of 'div' elements for the slick plugin to turn into carousels
-    In order to stay readable independent of the number of rows, this function
-    shoudl call a helper function for each new row
-*/
-function _populateDivs(render_data) {
-    // render_data = render_data.filter(resource => resource["Img URL"] != "");
-
-    // fill in missing image links with a placeholder
-    no_img = render_data.filter(resource => resource["Img URL"] == "");
-    for(let i=0; i<no_img.length; i++) {
-        no_img[i]["Img URL"] = '/s/code-icon.png';
-    }
-
-    rows = _getRows(render_data);
-
-    // var rows = [unplugged, best_authors, humanities];
-    var id_count = 0;
-    for(let i=0; i<rows.length; i++) {
-        // _buildRow(render_data.slice(i*row_divide, (i+1)*row_divide), row_ids[i], i*row_divide);
-        $('#feature-container').append('<section class="features" id="' +rows[i].id+ '"></section>');
-        _buildRow(rows[i], id_count);
-
-        $("#" + rows[i].id).slick({
-            dots: true,
-            infinite: true,
-            slidesToShow: 3,
-            slidesToScroll: 3
-        });
-        id_count += rows[i].data.length;
-        $('#'+rows[i].id).prepend('<div class="section-header">' + rows[i].title + '</div>');
-    }
-}
-
-function _buildRow(row, index_offset) {
-    var jq_id = '#' + row.id;
-    $(jq_id).empty();
-
-    if(row.data.length == 0)
-        $(jq_id).display('none');
-
-    row.data.map(function(item, i) {
-        var feature_id = 'feature' + (i + index_offset);
-        var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
-        var feature_div = `
-            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
-            <span>`+ item["Resource Name"] +`</span></a>
-                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
-                    <h3>Activity Page: <a target="_blank" href="`+ item["Resource Link"] +`">`+ item["Resource Name"] +`</a></h3>
-                    <br />`+ item["Description"] +`<br /><br />
-                    <b>Grade Level: </b>`+ item["Grade Level"] +`<br />
-                    <b>Subject: </b>`+ subjects +`<br />
-                    <b>Tech Required: </b>`+ item["Tech Required"] +`<br />
-                    <b>Author: </b><a href="`+ item["Author Link"] +`">`+ item["Author"] +`</a>
-                </div>`;
-        $("#" + row.id).append("<div class='thumbnail' list-index='" + resource_table[table_state].indexOf(item) + "'>" + feature_div + "</div>");
-        // $("#" + id).append("<div class='thumbnail'><img data-lazy='" + item["Img URL"] + "'></div>");
-    });  
-}
-
-function _getRows(render_data) {
-    const BEST_AUTHORS = ["Code.org Unplugged","code.org","Scratch","CSFirst with Google"];
-    return [{
-            'data': render_data.filter(resource => resource["Tags"].includes("unplugged")), 
-            'title': "Unplugged Activities:",
-            'id': 'unplugged'
-        },
-        {
-            'data': render_data.filter(resource => BEST_AUTHORS.includes(resource.Author)),
-            'title': "From our Favorite Authors:",
-            'id': 'best-authors'
-        },
-        {
-            'data': render_data.filter(function(resource) {
-                return (resource.Subject.includes("Language Arts") || resource.Subject.includes("Social Studies")) ? true : false;
-            }),
-            'title': 'Activities in the Humanities:',
-            'id': 'humanities'
-        },
-        {
-            'data': render_data.filter(function(resource) {
-                 return (resource.Subject.includes("Art") || resource.Subject.includes("Music")) ? true : false;
-            }),
-            'title': 'Activities in Music and the Visual Arts:',
-            'id': 'arts'
-        },
-        {
-            'data': render_data.filter(resource => (resource.Subject.includes('Science') || resource.Subject.includes('Math'))),
-            'title': 'Science and Math Activities: ',
-            'id': 'science-math'
-        }];
-    }
 
 /*
     Apply user-defined filters to the array of resources and return a filtered array
@@ -306,13 +213,15 @@ function _applyGradeFilter(activities) {
     @private
 */
 function _applySearchFilter(activities) {
+    console.log('applying search filter to ' + activities.length + ' activities');
     var render_data = [];
     var search_string = $('#keyword-search').val().toUpperCase();
-    console.log('reactive search called with string ' + search_string);
+    // console.log('reactive search called with string ' + search_string);
     if(search_string == "")
         return activities;
 
     activities.map(function(item) {
+        console.log('checking item ' + item["Resource Name"] + ' with index ' + resource_table.Activities.indexOf(item));
         var list_index = resource_table.Activities.indexOf(item);
         search_text[list_index].map(function(text) {
             if(text.includes(search_string))
@@ -323,13 +232,20 @@ function _applySearchFilter(activities) {
 }
 
 /*
-    Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
-    Once the HTTP Request is complete, call helper functions to populate the array and build
-    page features. This function makes use of the Google Sheets API
+    Process the hardcoded activities stored in resource_table.Activities. Then use the Google
+    Sheets API to get any new activities from the Resource Table source
+    Once the HTTP Request is complete, call helper functions to add new activities to their own 
+    row in the grid.
     Reference: https://developers.google.com/sheets/api/
+    Google Sheet URI: https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
     @private
 */
 function _getResourceTable() {
+    // _displayLoading(true);
+    _addGradeRange();
+    _renderSelects();
+    var id_count = _populateDivs(resource_table.Activities);
+
     $.ajax({
         url: "https://content-sheets.googleapis.com/v4/spreadsheets/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/values/A2%3AM",
         type: "get",
@@ -338,13 +254,33 @@ function _getResourceTable() {
           // ranges: 'A7:M10',
           key: API_KEY
         },
-        success: function(response) {
-            storeData(response);
-            _addGradeRange();
-            _renderSelects();
-            _populateDivs(resource_table.Activities);
+
+        error: function(xhr, text_status, error) {
+            _displayError(xhr, text_status, error);
         },
+        success: function(response) {
+            var new_activities = _storeData(response);
+            // _displayLoading(false);
+            _addGradeRange(new_activities);
+            _renderSelects(new_activities);
+            _addRow(new_activities, id_count);
+            // _populateDivs(resource_table.Activities);
+        },
+        timeout: 10000
     });
+}
+
+/*
+    Display some text or graphic to show that the resources are still loading
+    @param {boolean} loading - indicates whether the loading placeholder is to be
+        displayed or not
+    @private
+*/
+function _displayLoading(loading) {
+    if(loading)
+        $('#load-div').show();
+    else
+        $('#load-div').hide();
 }
 
 /*
@@ -354,14 +290,16 @@ function _getResourceTable() {
     @param {object} response- REST response 
     @private
 */
-function storeData(response) {
-    console.log("processing " + response.values.length + " activities");
+function _storeData(response) {
+    console.log("processing " + response.values.length + " activities from Google Sheets API");
+    var new_activities = [];
+    
     for(let i=0; i<response.values.length; i++) {
         var value = response.values[i];
         if(!value[11])
             value[11] = "";
         
-        resource_table.Activities.push({
+        var new_activity = {
           "Resource Name": value[0],
           "Resource Link": value[1],
           "Duration": value[2],
@@ -374,7 +312,13 @@ function storeData(response) {
           "Additional Info": value[9],
           "Description": value[10],
           "Img URL": value[11]
-        });
+        };  
+
+        if(!resource_table.Activities.find(act => act["Resource Name"] === new_activity["Resource Name"])) {
+            console.log("pushing " + new_activity["Resource Name"]);
+            resource_table.Activities.push(new_activity);
+            new_activities.push(new_activity);
+        }
 
         var search_text_arr = [];
         value.map(function(field) { 
@@ -382,6 +326,172 @@ function storeData(response) {
         });
         search_text.push(search_text_arr);
     }
+    return new_activities;
+}
+
+
+/*
+    Create rows of 'div' elements for the slick plugin to turn into carousels
+    In order to stay readable independent of the number of rows, this function
+    calls a helper function for each new row
+    @param {array} render_data - list of activities to render into the grid
+    @private
+*/
+function _populateDivs(render_data) {
+    // render_data = render_data.filter(resource => resource["Img URL"] != "");
+
+    // fill in missing image links with a placeholder
+    no_img = render_data.filter(resource => (resource["Img URL"] == "" || resource["Img URL"] == null));
+    for(let i=0; i<no_img.length; i++) {
+        no_img[i]["Img URL"] = '/s/code-icon.png';
+    }
+
+    rows = _getRows(render_data);
+
+    // var rows = [unplugged, best_authors, humanities];
+    var id_count = 0;
+    for(let i=0; i<rows.length; i++) {
+        // _buildRow(render_data.slice(i*row_divide, (i+1)*row_divide), row_ids[i], i*row_divide);
+        $('#feature-container').append('<section class="features" id="' +rows[i].id+ '"></section>');
+        _buildRow(rows[i], id_count);
+
+        $("#" + rows[i].id).slick({
+            dots: true,
+            infinite: true,
+            slidesToShow: 3,
+            slidesToScroll: 3
+        });
+        id_count += rows[i].data.length;
+        $('#'+rows[i].id).prepend('<div class="section-header">' + rows[i].title + '</div>');
+    }
+
+    return id_count;
+}
+
+/*
+    Build the HTML elements for one row of activities in the grid.
+    @param {object} row - auto-generated row object with 'title', 'id', and 'data' fields
+    @param {number} index_offset - offset number to add to the featherlight id of each item
+        in this row. This allows lightboxes to render properly
+    @private
+*/
+function _buildRow(row, index_offset) {
+    var jq_id = '#' + row.id;
+    $(jq_id).empty();
+
+    if(row.data.length == 0)
+        $(jq_id).hide();
+
+    row.data.map(function(item, i) {
+        var feature_id = 'feature' + (i + index_offset);
+        var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
+        var feature_div = `
+            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
+            <span>`+ item["Resource Name"] +`</span></a>
+                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
+                    <h3>Activity Page: <a target="_blank" href="`+ item["Resource Link"] +`">`+ item["Resource Name"] +`</a></h3>
+                    <br />`+ item["Description"] +`<br /><br />
+                    <b>Grade Level: </b>`+ item["Grade Level"] +`<br />
+                    <b>Subject: </b>`+ subjects +`<br />
+                    <b>Tech Required: </b>`+ item["Tech Required"] +`<br />
+                    <b>Author: </b><a href="`+ item["Author Link"] +`">`+ item["Author"] +`</a>
+                </div>`;
+        $("#" + row.id).append("<div class='thumbnail' list-index='" + resource_table[table_state].indexOf(item) + "'>" + feature_div + "</div>");
+        // $("#" + id).append("<div class='thumbnail'><img data-lazy='" + item["Img URL"] + "'></div>");
+    });  
+}
+
+/*
+    Create a row of new activities. This is exclusively called after the Google Sheets API has returned
+    new activities from the Resource Table
+    @param {array} render_data - list of new activity objects to render
+    @param {id_count} - number of rendered features (not unique) already in the grid
+    @private 
+*/  
+function _addRow(render_data, id_count) {
+    var row = {'data': render_data, 'title': 'New Activities:', 'id': 'new-activities'};
+    // TODO - creat helper fn for checking images
+    no_img = render_data.filter(resource => (resource["Img URL"] == "" || resource["Img URL"] == null));
+    for(let i=0; i<no_img.length; i++) {
+        no_img[i]["Img URL"] = '/s/code-icon.png';
+    }
+
+    $('#feature-container').append('<section class="features" id="'+row.id+'"></section>');
+        _buildRow(row, id_count);
+
+        $("#new-activities").slick({
+            dots: true,
+            infinite: true,
+            slidesToShow: 3,
+            slidesToScroll: 3
+        });
+        id_count += render_data.length;
+        $('#'+row.id).prepend('<div class="section-header">' + row.title + '</div>');
+}
+
+/*
+    Create an return an array of row objects that will be used to create the activity grid.
+    Each row has the following properties:
+        data - list of activities to include in that row of the grid
+        title - appears above the row
+        id - used for the parent HTML element
+    @param {array} render_data - list of activities to be sorted into rows
+    @private
+*/
+function _getRows(render_data) {
+    const BEST_AUTHORS = ["Code.org Unplugged","code.org","Scratch","CSFirst with Google"];
+    var rows = [{
+            'data': render_data.filter(resource => resource["Tags"].includes("unplugged")), 
+            'title': "Unplugged Activities:", 'id': 'unplugged'
+        },
+        {
+            'data': render_data.filter(resource => BEST_AUTHORS.includes(resource.Author)),
+            'title': "From our Favorite Authors:", 'id': 'best-authors'
+        },
+        {
+            'data': render_data.filter(resource => (resource.Subject.includes("Language Arts") || resource.Subject.includes("Social Studies")) ? true : false),
+            'title': 'Activities in the Humanities:', 'id': 'humanities'
+        },
+        {
+            'data': render_data.filter(resource => resource.Subject.includes("Art") || resource.Subject.includes("Music") ? true : false),
+            'title': 'Activities in Music and the Visual Arts:', 'id': 'arts'
+        },
+        {
+            'data': render_data.filter(resource => resource.Subject.includes('Science') || resource.Subject.includes('Math')),
+            'title': 'Science and Math Activities: ', 'id': 'science-math'
+        }];
+
+    var last_row = {
+        'data': render_data.filter(function(resource) {
+            for(let i=0; i<rows.length; i++) {
+                if(rows[i].data.includes(resource))
+                    return false;
+            }
+            return true;
+        }),
+        'title': 'Other Activities', 'id': 'other'
+    }
+    rows.push(last_row);
+
+    return rows;
+}
+
+/*
+    Print a generic error message if the resource does not load
+    @param {object} response - REST Request Error message
+    @private
+*/
+function _displayError(xhr, text_status, error) {
+    console.log('jqXHR:');
+    console.log(jqXHR);
+    console.log('textStatus:');
+    console.log(textStatus);
+    console.log('errorThrown:');
+    console.log(errorThrown);
+    // print a generic error message with instructions
+    // $('#feature-container').html(`Whoops! The resource failed to load. Please wait a few minutes and then refresh the page. 
+    //     If the problem persists please <a href="https://www.whitemountainscience.org/contact-us">contact</a> a WMSI administrator.`);
+    _getResourceTable();
 }
 
 /*
@@ -389,9 +499,9 @@ function storeData(response) {
     Populate each menu with the options available in the activities array
     @private
 */
-function _renderSelects() {
-    _renderCheckboxes('#tech-required',"Tech Required");
-    _renderSelect("#subject","Subject");
+function _renderSelects(data=resource_table.Activities) {
+    _renderCheckboxes('#tech-required',"Tech Required", data);
+    _renderSelect("#subject","Subject", data);
     _renderGradeSelect();
 }
 
@@ -401,21 +511,28 @@ function _renderSelects() {
     @param {string} key - JSON key in the Activity object that corresponds to the options for this menu
     @private
 */
-function _renderSelect(id, key) {
+function _renderSelect(id, key, data) {
+    var select_options = $(id).children().toArray().map(i => i.innerHTML);
+    var new_options = [];
 
-    var select_options = [];
-    $.each(resource_table.Activities, function(index, item) {
+    $.each(data, function(index, item) {
         if(Array.isArray(item[key])) {
             $.each(item[key], function(index, array_item) {
-                if($.inArray(array_item, select_options) === -1) select_options.push(array_item);
+                if($.inArray(array_item, select_options) === -1) {
+                    select_options.push(array_item);
+                    new_options.push(array_item);
+                }
             });
         } else {
-            if($.inArray(item[key], select_options) === -1) select_options.push(item[key]);
+            if($.inArray(item[key], select_options) === -1) {
+                select_options.push(item[key]);
+                new_options.push(item[key]);
+            }
         }
     });
 
     $(id).append(
-        $.map(select_options, function(item) {
+        $.map(new_options, function(item) {
             return '<option value="' + item + '">' + item + '</option>';
         }).join());
 }
@@ -426,12 +543,12 @@ function _renderSelect(id, key) {
     @param {string} key - JSON key in the Activity object that corresponds to the options for this menu
     @private
 */
-function _renderCheckboxes(id, key) {
+function _renderCheckboxes(id, key, data) {
     var select_options = [];
     var container = $(id);
     var tag_id = id.substr(1);
 
-    $.each(resource_table[table_state], function(index, item) {
+    $.each(data, function(index, item) {
         if(Array.isArray(item[key])) {
             $.each(item[key], function(index, array_item) {
                 if($.inArray(array_item, select_options) === -1) select_options.push(array_item);
@@ -442,13 +559,13 @@ function _renderCheckboxes(id, key) {
     });
     console.log('rendering ' + select_options);
 
+    container.html('');
     $.map(select_options, function(item, index) {
         var check_label = $('<label />', { 'for': (tag_id + index), text: item, style: 'font-weight: normal' }).appendTo(container);
         $('<input />', { type: 'checkbox', id: (tag_id + index), class: 'tech-check', value: item, checked: 'true', name: tag_id }).appendTo(check_label);
         // $('<br />').appendTo(container);
     });
 }
-
 
 /*
     Add options to the grade level dropdown menu
@@ -517,8 +634,8 @@ function _adaptActivity(activity_link, index, name) {
     'K' get stored as grade 0. The upper limit for unbounded range is 12
     @private
 */
-function _addGradeRange() {
-    $.each(resource_table.Activities, function(index, item) {
+function _addGradeRange(data=resource_table.Activities) {
+    $.each(data, function(index, item) {
         item["Grade Range"] = {};
         var low = item["Grade Level"][0];
         var high;

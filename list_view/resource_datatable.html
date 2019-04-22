@@ -21,6 +21,15 @@
         /*height: 70%;*/
       }
 
+      /*#feature-container {
+        height: 200px;
+      }
+
+      .featured-activity {
+        height: 200px;
+        width: 30%;
+      }*/
+
   </style>
 </head>
 
@@ -88,11 +97,17 @@
     </div>
     <br />
     <hr />
-    <div class="features">
-      <div class="featured-activity" id="feature1"></div>
-      <div class="featured-activity" id="feature2"></div>
-      <div class="featured-activity" id="feature3"></div>
+    <div id="load-div" style="display: none">
+      Activities will appear here when they load. If nothing happens please wait a minute before refreshing the page.
+      If a problem persists please notify us by clicking on the form link above.
     </div>
+    <!-- <section id="feature-container">
+      <div class="features">
+        <div class="featured-activity" id="feature1"></div>
+        <div class="featured-activity" id="feature2"></div>
+        <div class="featured-activity" id="feature3"></div>
+      </div>
+    </section> -->
 
     <!-- <h2 style="text-align: center">Featured Activities</h2> -->
     <!-- <div class="row" style="margin-left: 120px; margin-right: 120px;">
@@ -170,7 +185,7 @@
     <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.js"></script>
     <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.13/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script src="resource_table.js"></script> -->
+    <script src="resource_table.js"></script>
     <script type="text/javascript" src="../credentials.js"></script>
     <script src="resource_datatable_header.js"></script>
     <script>table_state='Activities'</script>
