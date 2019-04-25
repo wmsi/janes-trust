@@ -137,6 +137,7 @@ function _getResourceTable() {
     _addGradeRange();
     _renderSelects();
     var id_count = _populateDivs(resource_table.Activities);
+    return;
 
     $.ajax({
         url: "https://content-sheets.googleapis.com/v4/spreadsheets/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/values/A2%3AM",

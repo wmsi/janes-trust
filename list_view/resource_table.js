@@ -1152,10 +1152,7 @@ var resource_table =
       "Img URL": "https://code.org/images/fill-480x360/tutorials/hoc2017/hops_science.jpg"
     },
     {
-      "Resource Name": [
-        "If Flash",
-        "Then Clap!"
-      ],
+      "Resource Name": "If Flash, Then Clap!",
       "Resource Link": "https://dashboard.kodable.com/#/kcurriculum/lesson/97/",
       "Duration": "1h00",
       "Grade Level": "K-3",
@@ -1643,10 +1640,7 @@ var resource_table =
       "Img URL": "https://code.org/images/fill-480x360/tutorials/new/tlc_knight_tour.jpg"
     },
     {
-      "Resource Name": [
-        "Input and Output",
-        "Math Activity"
-      ],
+      "Resource Name": "Input and Output, Math Activity",
       "Resource Link": "https://app.vidcode.io/doc/unplugged-activity-math.pdf",
       "Duration": "1h00+",
       "Grade Level": "2+",

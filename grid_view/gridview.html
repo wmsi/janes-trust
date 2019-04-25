@@ -54,10 +54,10 @@
         <h3 style="text-align: center">Filter Activities By:</h3>
       </div>
       <div class="filters">
-        <select class="form-control form-control-lg" id="subject" onchange="renderFeatures()">
+        <select class="form-control form-control-lg" id="subject" onchange="renderGrid()">
             <option value="">Subject</option>
         </select><br />
-        <select class="form-control form-control-lg" id="grade" onchange="renderFeatures()">
+        <select class="form-control form-control-lg" id="grade" onchange="renderGrid()">
             <option value="">Grade Level</option>
         </select>
       </div>
@@ -77,7 +77,7 @@
       <div class="filters">
         <button onClick="resetFilters()">Reset All Filters</button><br /><br />
         <!-- <label for="keyword-search">Keyword Search: </label> -->
-        <input type="text" id="keyword-search"  onchange="renderFeatures()" placeholder="Keyword Search" />
+        <input type="text" id="keyword-search"  onchange="renderGrid()" placeholder="Keyword Search" />
       </div>
     </div>
     <br />
@@ -111,6 +111,7 @@
     <script type="text/javascript" src="slick/slick.min.js"></script>
     <script type="text/javascript" src="../credentials.js"></script>
     <script src="resource_table.js"></script>
+    <script src="../js/shared_functions.js"></script>
     <script src="gridview.js"></script>
     <script>table_state='Activities'</script>
 </body>
