@@ -134,6 +134,7 @@ function _applySearchFilter(activities) {
 */
 function _getResourceTable() {
     // _displayLoading(true);
+    _generateSearchText();
     _addGradeRange();
     _renderSelects();
     var id_count = _populateDivs(resource_table.Activities);
@@ -163,16 +164,23 @@ function _getResourceTable() {
 }
 
 /*
-    Display some text or graphic to show that the resources are still loading
-    @param {boolean} loading - indicates whether the loading placeholder is to be
-        displayed or not
-    @private
+    Generate search terms based on the static (hardcoded) activities so that 
+    the search bar will work.
 */
-function _displayLoading(loading) {
-    if(loading)
-        $('#load-div').show();
-    else
-        $('#load-div').hide();
+function _generateSearchText() {
+    resource_table.Activities.map(function(activity) {
+        var search_text_arr = [];
+        var keywords = [];
+        // value.map(function(field) { 
+        Object.keys(activity).map(function(key) {
+            if(Array.isArray(activity[key]))
+                keywords = activity[key];
+            else if(activity[key] !== null)
+                keywords = activity[key].split(", ");
+            keywords.map(item => search_text_arr.push(item.toUpperCase()));
+        });
+        search_text.push(search_text_arr);
+    });
 }
 
 /*

@@ -152,8 +152,6 @@ function _buildTable() {
             _addGradeRange(new_activities);
             _renderSelects();
             renderTable(table);
-            // _addRows(new_activities, table);
-            // renderFeatures();
         },
         error: function(error) {
             _displayError(error);
@@ -210,16 +208,6 @@ function _storeData(response) {
         }
     }
     return new_activities;
-}
-
-function addRows(data, table) {
-    $.map(data, function(res) {
-        var new_row = [
-            '<a href="'+res["Resource Link"]+'">'+res["Resource Name"]+'</a>',
-            ''
-        ];
-        table.row.add()
-    });
 }
 
 /*

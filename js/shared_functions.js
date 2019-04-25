@@ -299,3 +299,16 @@ function _addGradeRange(data=resource_table.Activities) {
         item["Grade Range"]["high"] = high;
     });
 }
+
+/*
+    Display some text or graphic to show that the resources are still loading
+    @param {boolean} loading - indicates whether the loading placeholder is to be
+        displayed or not
+    @private
+*/
+function _displayLoading(loading) {
+    if(loading)
+        $('#load-div').show();
+    else
+        $('#load-div').hide();
+}
