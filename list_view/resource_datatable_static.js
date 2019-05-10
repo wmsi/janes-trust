@@ -1,4 +1,5 @@
 var table_state = 'Activities';     // what is currently being displayed?
+var datatable;
 // var table_source;                   // store data for the DataTables plugin to render
 // var resource_table = {"Activities": []};
 var table_ref;                      // reference variable for accessing the data table
@@ -37,7 +38,7 @@ $(document).ready(function(){
     @param {string} key - JSON key in the Activity object that corresponds to the options for this menu
     @private
 */
-function renderTable(table_ref=false) {
+function renderTable(table_ref=datatable) {
     var render_data = _filterResources(resource_table[table_state]);
     var table_source = [];
     
@@ -200,6 +201,8 @@ function _setupDataTable(table_source) {
             // { "dom": '<"wrapper"fli>' }
         ]
     });
+
+    datatable=table_ref;
     return table_ref;
 }
 

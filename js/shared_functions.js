@@ -107,6 +107,7 @@ function _applyCheckboxFilter(activities, id, key) {
 function _applyGradeFilter(activities) {
     var grade_filter = $('#grade').val();
     var render_activities = [];
+    console.log('applying grade filter to ' + activities.length + ' activities');
 
     if(grade_filter != "") {
         if(grade_filter === 'K') grade_filter = 0;
@@ -118,6 +119,7 @@ function _applyGradeFilter(activities) {
         });
     } else render_activities = activities;
 
+    console.log('returning ' + render_activities.length + ' activities');
     return render_activities;
 }
 
@@ -148,6 +150,11 @@ function _renderSelects(data=resource_table.Activities) {
     _renderCheckboxes('#tech-required',"Tech Required", data);
     _renderSelect("#subject","Subject", data);
     _renderGradeSelect();
+}
+
+function _updateSelects(data=resource_table.Activities) {
+    _renderCheckboxes('#tech-required',"Tech Required", data);
+    _renderSelect("#subject","Subject", data);
 }
 
 /*
@@ -248,6 +255,42 @@ function _moreInfo(item, index) {
         // lightbox_link.replace('mylightbox', 'activity'+index) + lightbox_div.replace('mylightbox', 'activity'+index);
         // lightbox = lightbox.replace('#author', author_link).replace('#tags', item['Tags'].join(', '));
     return lightbox_div;
+}
+
+/*
+    Build the HTML elements for one row of activities in the grid.
+    @param {object} row - auto-generated row object with 'title', 'id', and 'data' fields
+    @param {number} index_offset - offset number to add to the featherlight id of each item
+        in this row. This allows lightboxes to render properly
+    @private
+*/
+function _buildRow(row, index_offset) {
+    var jq_id = '#' + row.id;
+    $(jq_id).empty();
+
+    if(row.data.length == 0)
+        $(jq_id).hide();
+
+    row.data.map(function(item, i) {
+        var feature_id = 'feature' + (i + index_offset);
+        var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
+        var resource_link = '<a target="_blank" href="'+ item["Resource Link"] +'">'+ item["Resource Name"] +'</a>';
+        if(item['Tags'].includes('incomplete')) 
+            resource_link = _adaptActivity(resource_link, i, item["Resource Name"]);
+        var feature_div = `
+            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
+            <span>`+ item["Resource Name"] +`</span></a>
+                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
+                    <h3>Activity Page: ` + resource_link + `</h3>
+                    <br />`+ item["Description"] +`<br /><br />
+                    <b>Grade Level: </b>`+ item["Grade Level"] +`<br />
+                    <b>Subject: </b>`+ subjects +`<br />
+                    <b>Tech Required: </b>`+ item["Tech Required"] +`<br />
+                    <b>Author: </b><a href="`+ item["Author Link"] +`">`+ item["Author"] +`</a>
+                </div>`;
+        $("#" + row.id).append("<div class='thumbnail' list-index='" + resource_table[table_state].indexOf(item) + "'>" + feature_div + "</div>");
+        // $("#" + id).append("<div class='thumbnail'><img data-lazy='" + item["Img URL"] + "'></div>");
+    });  
 }
 
 /*

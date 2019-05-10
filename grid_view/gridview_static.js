@@ -199,39 +199,6 @@ function _populateDivs(render_data) {
 }
 
 /*
-    Build the HTML elements for one row of activities in the grid.
-    @param {object} row - auto-generated row object with 'title', 'id', and 'data' fields
-    @param {number} index_offset - offset number to add to the featherlight id of each item
-        in this row. This allows lightboxes to render properly
-    @private
-*/
-function _buildRow(row, index_offset) {
-    var jq_id = '#' + row.id;
-    $(jq_id).empty();
-
-    if(row.data.length == 0)
-        $(jq_id).hide();
-
-    row.data.map(function(item, i) {
-        var feature_id = 'feature' + (i + index_offset);
-        var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
-        var feature_div = `
-            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
-            <span>`+ item["Resource Name"] +`</span></a>
-                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
-                    <h3>Activity Page: <a target="_blank" href="`+ item["Resource Link"] +`">`+ item["Resource Name"] +`</a></h3>
-                    <br />`+ item["Description"] +`<br /><br />
-                    <b>Grade Level: </b>`+ item["Grade Level"] +`<br />
-                    <b>Subject: </b>`+ subjects +`<br />
-                    <b>Tech Required: </b>`+ item["Tech Required"] +`<br />
-                    <b>Author: </b><a href="`+ item["Author Link"] +`">`+ item["Author"] +`</a>
-                </div>`;
-        $("#" + row.id).append("<div class='thumbnail' list-index='" + resource_table[table_state].indexOf(item) + "'>" + feature_div + "</div>");
-        // $("#" + id).append("<div class='thumbnail'><img data-lazy='" + item["Img URL"] + "'></div>");
-    });  
-}
-
-/*
     Create an return an array of row objects that will be used to create the activity grid.
     Each row has the following properties:
         data - list of activities to include in that row of the grid

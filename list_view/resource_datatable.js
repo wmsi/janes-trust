@@ -1,4 +1,5 @@
 var table_state = 'Activities';     // what is currently being displayed?
+var datatable;
 // var table_source;                   // store data for the DataTables plugin to render
 // var resource_table = {"Activities": []};
 var table_ref;                      // reference variable for accessing the data table
@@ -37,11 +38,11 @@ $(document).ready(function(){
     @param {string} key - JSON key in the Activity object that corresponds to the options for this menu
     @private
 */
-function renderTable(table_ref=false) {
+function renderTable() {
     var render_data = _filterResources(resource_table[table_state]);
     var table_source = [];
     
-    renderFeatures();
+    renderFeatures(render_data);
 
     $.map(render_data, function(item, index) {
         var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
@@ -59,7 +60,7 @@ function renderTable(table_ref=false) {
     });
 
     if(table_ref)
-        _refreshTable(table_ref, table_source);
+        _refreshTable(table_source);
     return table_source;
 }
 
@@ -68,8 +69,7 @@ function renderTable(table_ref=false) {
     activities with img urls that match the set of filters chosen. Then pick
     features from this list based on keywords
 */
-function renderFeatures() {
-    var render_data = _filterResources(resource_table[table_state]);
+function renderFeatures(render_data) {
     var feature_list = [];
     $.map(render_data, function(item) {
         if(item["Img URL"] != "") {
@@ -134,7 +134,8 @@ function _buildTable() {
     // _displayLoading(true);
     _addGradeRange();
     _renderSelects();
-    var table = _setupDataTable(renderTable());
+    // var table = _setupDataTable(renderTable());
+    _setupDataTable(renderTable());
     renderFeatures();
     // return;
     
@@ -150,8 +151,8 @@ function _buildTable() {
             var new_activities = _storeData(response);
             // _displayLoading(false);
             _addGradeRange(new_activities);
-            _renderSelects();
-            renderTable(table);
+            _updateSelects();
+            renderTable();
         },
         error: function(error) {
             _displayError(error);
@@ -239,7 +240,7 @@ function _buildFeatures(feature_list) {
     return features;
 }
 
-function _refreshTable(table_ref, table_source) {
+function _refreshTable(table_source) {
     table_ref.clear().rows.add(table_source).draw();
 }
 
@@ -272,7 +273,8 @@ function _setupDataTable(table_source) {
             // { "dom": '<"wrapper"fli>' }
         ]
     });
-    return table_ref;
+    // datatable = table_ref;
+    // return table_ref;
 }
 
 function _setupFeatures() {
