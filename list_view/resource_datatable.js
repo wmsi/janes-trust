@@ -20,14 +20,14 @@ $(document).ready(function(){
         if(selected != table_state) {
             table_state = selected;
             renderTable(); 
-            renderFeatures();  
+            // renderFeatures();  
         }
     });
 
-    $('input[name=tech-required]').change(function() {
-      renderTable();
-      renderFeatures();
-    });
+    // $('input[name=tech-required]').change(function() {
+    //   renderTable();
+    //   renderFeatures();
+    // });
     $('.dataTables_filter').addClass('pull-left');
     $('.dataTables_length').addClass('pull-left');
 });
@@ -42,8 +42,10 @@ function renderTable() {
     var render_data = _filterResources(resource_table[table_state]);
     var table_source = [];
     
+    console.log('rendering features...');
     renderFeatures(render_data);
 
+    console.log('rendering table...');
     $.map(render_data, function(item, index) {
         var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
         // var author_link = '<a target="_blank" href="' + item["Author Link"] + '">' + item["Author"] + '</a>';
@@ -59,6 +61,7 @@ function renderTable() {
         table_source.push([resource_link, item["Description"], item["Duration"], item["Grade Level"], subjects, item["Tech Required"], lightbox]);       
     });
 
+    console.log('refreshig table...');
     if(table_ref)
         _refreshTable(table_source);
     return table_source;
@@ -228,11 +231,12 @@ function _buildFeatures(feature_list) {
         var new_id = Math.floor(Math.random()*feature_list.length);
 
         // get the first feature from a top-tier source
-        if(features.length == 0) {
-            if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
-                features.push(feature_list[new_id]);
+        // if(features.length == 0) {
+        //     if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
+        //         features.push(feature_list[new_id]);
 
-        } else if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
+        // } else 
+        if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
             features.push(feature_list[new_id]);
     }
 

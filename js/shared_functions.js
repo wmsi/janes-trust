@@ -24,7 +24,8 @@ function _filterResources(resource_list, search=false) {
     var render_activities = [];
     // render_activities = _applyFilter(resource_list, "tech-required", "Tech Required");
     render_activities = _applyFilter(resource_list, "subject", "Subject");
-    render_activities = _applyCheckboxFilter(render_activities, "#tech-required", "Tech Required");
+    // render_activities = _applyCheckboxFilter(render_activities, "#tech-required", "Tech Required");
+    render_activities = _applyTechFilter(render_activities);
     render_activities = _applyGradeFilter(render_activities);
     if(search)
         render_activities = _applySearchFilter(render_activities);
@@ -50,14 +51,16 @@ function _applyFilter(activities, id, key) {
         // console.log('checking: ' + filter_val + ' against ' + item[key]);
             if(Array.isArray(item[key])) {
                 $.each(item[key], function(index, array_item) {
-                    if(array_item == filter_val) render_activities.push(item);
+                    if(array_item == filter_val) 
+                        render_activities.push(item);
                 });
             } else {
-
-                if(item[key] == filter_val) render_activities.push(item);
+                if(item[key] == filter_val) 
+                    render_activities.push(item);
             }
         });
-    } else render_activities = activities;
+    } else 
+        render_activities = activities;
 
     return render_activities;
 }
@@ -95,6 +98,26 @@ function _applyCheckboxFilter(activities, id, key) {
     });
     // console.log('filtering ' + render_activities.length + " resources");
 
+    return render_activities;
+}
+
+function _applyTechFilter(activities) {
+    var unplugged = $('#unplugged').is(':checked');
+    var tech = $('#tech').is(':checked');
+
+    // $.map(activities, function(item) {
+    //     if(Array.isArray(item[key])) {
+    //         $.map(item[key], function(field_item) {
+    //             if(filter_values.includes(field_item) && !render_activities.includes(item)) {
+    //                 render_activities.push(item);
+    //                 return;
+    //             }
+    //         });
+    //     } else {
+    //         if(filter_values.includes(item[key])) render_activities.push(item);
+    //     }
+    // });
+    
     return render_activities;
 }
 

@@ -71,15 +71,19 @@
         <h3 style="text-align: center">Filter Activities By:</h3>
       </div>
       <div class="filters">
-        <select class="form-control form-control-lg" id="subject" onchange="renderTable()">
+        <select class="form-control form-control-lg" id="subject">
             <option value="">Subject</option>
         </select><br />
-        <select class="form-control form-control-lg" id="grade" onchange="renderTable()">
+        <select class="form-control form-control-lg" id="grade">
             <option value="">Grade Level</option>
         </select>
       </div>
       <div class="filters">
-        <div class="multiselect">
+        <b>Tech Required: </b><br>
+        <input type="checkbox" id="unplugged"> Unplugged<br>
+        <input type="checkbox" id="tech"> Some Technology<br>
+
+        <!-- <div class="multiselect">
           <div class="selectBox" onclick="showCheckboxes()">
             <select>
               <option>Tech Required</option>
@@ -88,10 +92,11 @@
           </div>
           <div id="tech-required">
           </div>
-        </div>
-        <button class="filter-button" onClick="uncheckTech()">Uncheck All</button>
+        </div> -->
+        <!-- <button class="filter-button" onClick="uncheckTech()">Uncheck All</button> -->
       </div>
       <div class="filters">
+        <button onClick="renderTable()">Search for Activities</button>
         <button onClick="resetFilters()">Reset All Filters</button>
       </div>
     </div>

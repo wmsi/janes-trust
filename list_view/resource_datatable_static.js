@@ -15,19 +15,19 @@ $(document).ready(function(){
     _setupFeatures();
 
     // switch between activity and curriculum views
-    $('input[name=view]').click(function() {
-        var selected = $('input[name=view]:checked').val();
-        if(selected != table_state) {
-            table_state = selected;
-            renderTable(); 
-            renderFeatures();  
-        }
-    });
+    // $('input[name=view]').click(function() {
+    //     var selected = $('input[name=view]:checked').val();
+    //     if(selected != table_state) {
+    //         table_state = selected;
+    //         renderTable(); 
+    //         renderFeatures();  
+    //     }
+    // });
 
-    $('input[name=tech-required]').change(function() {
-      renderTable();
-      renderFeatures();
-    });
+    // $('input[name=tech-required]').change(function() {
+    //   renderTable();
+    //   renderFeatures();
+    // });
     $('.dataTables_filter').addClass('pull-left');
     $('.dataTables_length').addClass('pull-left');
 });
@@ -156,11 +156,12 @@ function _buildFeatures(feature_list) {
         var new_id = Math.floor(Math.random()*feature_list.length);
 
         // get the first feature from a top-tier source
-        if(features.length == 0) {
-            if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
-                features.push(feature_list[new_id]);
+        // if(features.length == 0) {
+        //     if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
+        //         features.push(feature_list[new_id]);
 
-        } else if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
+        // } else 
+        if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
             features.push(feature_list[new_id]);
     }
 
