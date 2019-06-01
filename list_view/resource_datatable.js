@@ -42,6 +42,7 @@ function renderTable(search=false) {
     var render_data = _filterResources(resource_table[table_state]);
     var table_source = [];
     var search_string = _getSearchString();//$('input[type="search"]').val();
+    // var resource_link;
     if(render_data.length == 0) {
         alert('This Search returned no activities.');
         return;   
