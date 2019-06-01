@@ -13,6 +13,7 @@ $(document).ready(function(){
     console.log('table length ' + resource_table.Activities.length);
     _buildTable();
     _setupFeatures();
+    _handleSearch();
 
     // switch between activity and curriculum views
     $('input[name=view]').click(function() {
@@ -33,19 +34,21 @@ $(document).ready(function(){
 });
 
 /*
-    Add options to a dropdown menu
-    @param {string} id - HTML id of the dropdown to create
-    @param {string} key - JSON key in the Activity object that corresponds to the options for this menu
-    @private
+    Render the datatable with activities filtered by user
+    @param {boolean} search - 'true' if user has filtered activities. 
+        'false' if the whole table should be rendered
 */
-function renderTable() {
+function renderTable(search=false) {
     var render_data = _filterResources(resource_table[table_state]);
     var table_source = [];
+    var search_string = _getSearchString();//$('input[type="search"]').val();
+    if(render_data.length == 0) {
+        alert('This Search returned no activities.');
+        return;   
+    }
     
-    console.log('rendering features...');
     renderFeatures(render_data);
 
-    console.log('rendering table...');
     $.map(render_data, function(item, index) {
         var subjects = Array.isArray(item["Subject"]) ? item["Subject"].join(", ") : item["Subject"];
         // var author_link = '<a target="_blank" href="' + item["Author Link"] + '">' + item["Author"] + '</a>';
@@ -61,9 +64,14 @@ function renderTable() {
         table_source.push([resource_link, item["Description"], item["Duration"], item["Grade Level"], subjects, item["Tech Required"], lightbox]);       
     });
 
-    console.log('refreshig table...');
     if(table_ref)
-        _refreshTable(table_source);
+        _refreshTable(table_source, search_string);
+    if(search) {
+        document.querySelector('#content').scrollIntoView({ 
+          behavior: 'smooth' 
+        });
+        location.hash = search_string;
+    }
     return table_source;
 }
 
@@ -82,15 +90,20 @@ function renderFeatures(render_data) {
 
 
     var features = _buildFeatures(feature_list);
+    $('#feature-container').show();
+    if(features.length < 3) {
+        $('#feature-container').hide();
+        return;
+    }
     
     $(".featured-activity").each(function(i) {
         $(this).empty();
         var feature_id = 'feature' + (i + 1);
         var subjects = Array.isArray(features[i]["Subject"]) ? features[i]["Subject"].join(", ") : features[i]["Subject"];
         var feature_div = `
-            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" src="`+ features[i]["Img URL"] +`" /></div><br />
+            <a href="#" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" src="`+ features[i]["Img URL"] +`" /></div><br />
             <span>`+ features[i]["Resource Name"] +`</span></a>
-                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
+                <div style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
                     <h3>Activity Page: <a target="_blank" href="`+ features[i]["Resource Link"] +`">`+ features[i]["Resource Name"] +`</a></h3>
                     <br />`+ features[i]["Description"] +`<br /><br />
                     <b>Grade Level: </b>`+ features[i]["Grade Level"] +`<br />
@@ -104,27 +117,36 @@ function renderFeatures(render_data) {
 }
 
 /* 
-    Reset all fitlers to their default values
+    Reset all filters to their default values
 */
 function resetFilters() {
-    $('#subject').val("");
-    $('#grade').val("");
-
-    var checkboxes = $('#tech-required').find('input.tech-check');
-    $.map(checkboxes, function(item, index) {
-        item.checked= true;
-    });
+    _resetFilters();
+    $('input[type="search"]').val("");
     renderTable();
 }
+/*
+    Create a search string from the chosen filter options.
+*/
+function _getSearchString() {
+    var search_params = [];
 
-function uncheckTech() {
-    var checkboxes = $('#tech-required').find('input.tech-check');
-    $.map(checkboxes, function(item, index) {
-        item.checked = false;
-    });
-    renderTable();
+    // if($('input[type="search"]').val() != "")
+    //     search_params.push($('input[type="search"]').val());
+    
+    if($('#subject').val() != "") 
+        search_params.push("Subject=" + $('#subject').val());
+
+    if($('#grade').val() != "")
+        search_params.push("Grade=" + $('#grade').val());
+
+    if($('#no-tech').is(':checked'))
+        search_params.push('unplugged');
+
+    if($('#tech').is(':checked'))
+        search_params.push('tech');
+
+    return "q=" + search_params.join('&');
 }
-
 
 /*
     Get the "Resource Table" Google sheet from https://docs.google.com/spreadsheets/d/1EdmNxW0F5jTdkemGx95QB_WbasvWVGEfVXuCAZ19cXU/
@@ -139,7 +161,7 @@ function _buildTable() {
     _renderSelects();
     // var table = _setupDataTable(renderTable());
     _setupDataTable(renderTable());
-    renderFeatures();
+    // renderFeatures();
     // return;
     
     $.ajax({
@@ -215,40 +237,6 @@ function _storeData(response) {
 }
 
 /*
-    Create three features to appear above the table. Features can fit whatever criteria we want-
-    Right now the first one always comes from a list of 'best authors' and the other two are random
-    @param {array} feature_list - a list of activities that could be used as features. Currently this
-        is all activities with an "Img URL" field
-    @returns {array} features - featured activities to display above the table
-    @private
-*/
-function _buildFeatures(feature_list) {
-    features = [];
-    num_features = 3;
-    const BEST_AUTHORS = ["Code.org Unplugged","code.org","Scratch","CSFirst with Google"];
-
-    while(features.length < num_features) {
-        var new_id = Math.floor(Math.random()*feature_list.length);
-
-        // get the first feature from a top-tier source
-        // if(features.length == 0) {
-        //     if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
-        //         features.push(feature_list[new_id]);
-
-        // } else 
-        if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
-            features.push(feature_list[new_id]);
-    }
-
-    // console.log('built ' + features.length + ' features with first author ' + features[0]["Author"]);
-    return features;
-}
-
-function _refreshTable(table_source) {
-    table_ref.clear().rows.add(table_source).draw();
-}
-
-/*
     Wrap our table with the DataTables plugin from https://www.datatables.net/
     This makes the columns sortable and options for filtering by a search bar
     and displaying n entries per page.
@@ -282,12 +270,22 @@ function _setupDataTable(table_source) {
 }
 
 function _setupFeatures() {
-    $('#resource-table_filter').after(`<section id="feature-container">
+    $('#resource-table_filter').after(`
+    <span id="content"> </span>
+    <section id="feature-container">
       <br /><h3>Featured Activities:</h3><br />
       <div class="features">
-        <div class="featured-activity" id="feature1"></div>
-        <div class="featured-activity" id="feature2"></div>
-        <div class="featured-activity" id="feature3"></div>
+        <div class="featured-activity" id="featurediv1"></div>
+        <div class="featured-activity" id="featurediv2"></div>
+        <div class="featured-activity" id="featurediv3"></div>
       </div>
     </section>`);
+}
+
+function _handleSearch() {
+    $('input[type="search"]').on('keydown', function(e) {
+        if (e.which == 13) {
+            renderTable(true);
+        }
+});
 }

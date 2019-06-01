@@ -15,6 +15,21 @@ function showCheckboxes() {
   }
 }
 
+/* 
+    Reset all fitlers to their default values
+*/
+function _resetFilters() {
+    $('#subject').val("");
+    $('#grade').val("");
+    $('#tech').prop('checked',true);
+    $('#no-tech').prop('checked',true);
+
+    // var checkboxes = $('#tech-required').find('input.tech-check');
+    // $.map(checkboxes, function(item, index) {
+    //     item.checked= true;
+    // });
+}
+
 /*
     Apply user-defined filters to the array of resources and return a filtered array
     @returns {array} of activities that match all filters
@@ -102,21 +117,30 @@ function _applyCheckboxFilter(activities, id, key) {
 }
 
 function _applyTechFilter(activities) {
-    var unplugged = $('#unplugged').is(':checked');
+    var unplugged = $('#no-tech').is(':checked');
     var tech = $('#tech').is(':checked');
+    // if(!unplugged && )
+    var key = "Tech Required";
+    var render_activities = [];
 
-    // $.map(activities, function(item) {
-    //     if(Array.isArray(item[key])) {
-    //         $.map(item[key], function(field_item) {
-    //             if(filter_values.includes(field_item) && !render_activities.includes(item)) {
-    //                 render_activities.push(item);
-    //                 return;
-    //             }
-    //         });
-    //     } else {
-    //         if(filter_values.includes(item[key])) render_activities.push(item);
-    //     }
-    // });
+    $.map(activities, function(item) {
+        if(Array.isArray(item[key])) {
+            // $.map(item[key], function(field_item) {
+                if(unplugged && item[key].includes("None")) {
+                    render_activities.push(item);
+                    return;
+                } else if(tech && !item[key].includes("None")) {
+                    render_activities.push(item);
+                    return;
+                }
+            // });
+        } else {
+            if(unplugged && item[key] == "None") 
+                render_activities.push(item);
+            else if(tech && item[key]    != "None")
+                render_activities.push(item);
+        }
+    });
     
     return render_activities;
 }
@@ -130,7 +154,7 @@ function _applyTechFilter(activities) {
 function _applyGradeFilter(activities) {
     var grade_filter = $('#grade').val();
     var render_activities = [];
-    console.log('applying grade filter to ' + activities.length + ' activities');
+    // console.log('applying grade filter to ' + activities.length + ' activities');
 
     if(grade_filter != "") {
         if(grade_filter === 'K') grade_filter = 0;
@@ -170,13 +194,13 @@ function _displayError(xhr, text_status, error) {
     @private
 */
 function _renderSelects(data=resource_table.Activities) {
-    _renderCheckboxes('#tech-required',"Tech Required", data);
+    // _renderCheckboxes('#tech-required',"Tech Required", data);
     _renderSelect("#subject","Subject", data);
     _renderGradeSelect();
 }
 
 function _updateSelects(data=resource_table.Activities) {
-    _renderCheckboxes('#tech-required',"Tech Required", data);
+    // _renderCheckboxes('#tech-required',"Tech Required", data);
     _renderSelect("#subject","Subject", data);
 }
 
@@ -301,9 +325,9 @@ function _buildRow(row, index_offset) {
         if(item['Tags'].includes('incomplete')) 
             resource_link = _adaptActivity(resource_link, i, item["Resource Name"]);
         var feature_div = `
-            <a href="#"" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
+            <a href="#" data-featherlight="#`+ feature_id +`"><div class="feature"><img class="feature" data-lazy="`+ item["Img URL"] +`" /></div><br />
             <span>`+ item["Resource Name"] +`</span></a>
-                <div  style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
+                <div style="display: none"><div id="`+ feature_id +`" style="padding: 10px;">
                     <h3>Activity Page: ` + resource_link + `</h3>
                     <br />`+ item["Description"] +`<br /><br />
                     <b>Grade Level: </b>`+ item["Grade Level"] +`<br />
@@ -314,6 +338,49 @@ function _buildRow(row, index_offset) {
         $("#" + row.id).append("<div class='thumbnail' list-index='" + resource_table[table_state].indexOf(item) + "'>" + feature_div + "</div>");
         // $("#" + id).append("<div class='thumbnail'><img data-lazy='" + item["Img URL"] + "'></div>");
     });  
+}
+
+/*
+    Create three features to appear above the table. Features can fit whatever criteria we want-
+    Right now the first one always comes from a list of 'best authors' and the other two are random
+    @param {array} feature_list - a list of activities that could be used as features. Currently this
+        is all activities with an "Img URL" field
+    @returns {array} features - featured activities to display above the table
+    @private
+*/
+function _buildFeatures(feature_list) {
+    features = [];
+    num_features = 3;
+    var counter = 0;
+    const BEST_AUTHORS = ["Code.org Unplugged","code.org","Scratch","CSFirst with Google"];
+
+    while(features.length < num_features) {
+        var new_id = Math.floor(Math.random()*feature_list.length);
+
+        // get the first feature from a top-tier source
+        // if(features.length == 0) {
+        //     if(BEST_AUTHORS.includes(feature_list[new_id]["Author"]))
+        //         features.push(feature_list[new_id]);
+
+        // } else 
+        if(!features.includes(feature_list[new_id]) && !feature_list[new_id]["Tags"].includes("incomplete"))
+            features.push(feature_list[new_id]);
+        counter++;
+        if(counter > feature_list.length)
+            return features;
+    }
+
+    // console.log('built ' + features.length + ' features with first author ' + features[0]["Author"]);
+    return features;
+}
+
+/*
+    Refresh the data table based on a new lsit of activities
+    @param {array} table_source - array of activity objects to render
+    @private
+*/
+function _refreshTable(table_source) {
+    table_ref.clear().rows.add(table_source).draw();
 }
 
 /*

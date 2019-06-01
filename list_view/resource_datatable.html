@@ -21,6 +21,13 @@
         /*height: 70%;*/
       }
 
+      .filter-form {
+        background-color: #f7f7f7;
+        padding: 20px 20px 0px 0px;
+        margin: 10px;
+        overflow: hidden;
+      }
+
       /*#feature-container {
         height: 200px;
       }
@@ -66,7 +73,7 @@
     </table> -->
     <!-- <button type="button" class="form-control" id="print-stats" onClick="printStats()" style="width: 12em">Print Table Stats</button>
     <div id="stats"/> -->
-    <div style="padding: 20px">
+    <div class="filter-form">
       <div class="filters">
         <h3 style="text-align: center">Filter Activities By:</h3>
       </div>
@@ -80,8 +87,8 @@
       </div>
       <div class="filters">
         <b>Tech Required: </b><br>
-        <input type="checkbox" id="unplugged"> Unplugged<br>
-        <input type="checkbox" id="tech"> Some Technology<br>
+        <input type="checkbox" id="no-tech" checked> Unplugged<br>
+        <input type="checkbox" id="tech" checked> Some Technology<br>
 
         <!-- <div class="multiselect">
           <div class="selectBox" onclick="showCheckboxes()">
@@ -92,16 +99,16 @@
           </div>
           <div id="tech-required">
           </div>
-        </div> -->
-        <!-- <button class="filter-button" onClick="uncheckTech()">Uncheck All</button> -->
+        </div>
+        <button class="filter-button" onClick="uncheckTech()">Uncheck All</button> -->
       </div>
       <div class="filters">
-        <button onClick="renderTable()">Search for Activities</button>
+        <button onClick="renderTable(true)">Search for Activities</button><br>
         <button onClick="resetFilters()">Reset All Filters</button>
       </div>
     </div>
-    <br />
-    <hr />
+    <br>
+    <hr>
     <div id="load-div" style="display: none">
       Activities will appear here when they load. If nothing happens please wait a minute before refreshing the page.
       If a problem persists please notify us by clicking on the form link above.
@@ -139,7 +146,7 @@
         <img src="https://code.org/images/fill-480x360/tutorials/new/scratch_music.jpg">
       </div>
     </div> -->
-
+    <span id="content"> </span>
     <table id="resource-table" class="display">
       <thead>
           <tr><b>
@@ -186,9 +193,11 @@
             </div>
         </div>
     </div> -->
-    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-latest.js"></script> -->
+    <script src="../js/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.4/fh-3.1.4/r-2.2.2/datatables.min.js"></script> -->
+    <script src="./DataTables/datatables.js"></script>
     <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.13/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="resource_table.js"></script>
     <script type="text/javascript" src="../credentials.js"></script>

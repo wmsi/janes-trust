@@ -34,7 +34,10 @@ $(document).ready(function(){
 */
 function renderGrid() {
     var render_data = _filterResources(resource_table[table_state], true);
-    console.log('rendering ' + render_data.length + ' features');
+    if(render_data.length == 0) {
+        alert('This Search returned no activities.');
+        return;   
+    }
 
     var rows = $('#feature-container').children().toArray();
     var row_ids = rows.map(function(item) {return item.id});
@@ -54,6 +57,11 @@ function renderGrid() {
             return render_data.includes(resource_table[table_state][table_index]);
         });
     }
+
+    document.querySelector('#feature-container').scrollIntoView({ 
+      behavior: 'smooth' 
+    });
+    location.hash = "results";
 }
 
 /*
@@ -75,15 +83,8 @@ function showCheckboxes() {
     Reset all fitlers to their default values
 */
 function resetFilters() {
-    $('#subject').val("");
-    $('#grade').val("");
-    $('#keyword-search').val("");
-
-    var checkboxes = $('#tech-required').find('input.tech-check');
-    $.map(checkboxes, function(item, index) {
-        item.checked= true;
-    });
-    renderGrid();
+    _resetFilters();
+    // renderGrid();
 }
 
 /*
@@ -105,6 +106,9 @@ function uncheckTech() {
     @private
 */
 function _applySearchFilter(activities) {
+    if(!$('#keyword-search').length)
+        return activities;
+
     console.log('applying search filter to ' + activities.length + ' activities');
     var render_data = [];
     var search_string = $('#keyword-search').val().toUpperCase();
